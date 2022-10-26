@@ -1,0 +1,360 @@
+--GPU 0 --dataset_path datasets --trainer DDAIG --source_domains cartoon photo sketch --target_domain art_painting --config_path_trainer configs/trainers/ddaig/pacs.yaml --config_path_dataset configs/datasets/ddaig/pacs.yaml
+
+DATALOADER
+    cfg.DATALOADER.K_TRANSFORMS: 1                                                  # dg.config.get_cfg_default
+    cfg.DATALOADER.NUM_WORKERS: 4                                                   # dg.config.get_cfg_default
+    cfg.DATALOADER.RETURN_IMG0: False                                               # dg.config.get_cfg_default
+    TEST
+    cfg.DATALOADER.TEST.BATCH_SIZE: 16                                              # cfg.merge_from_file(args.config_path_trainer)
+    cfg.DATALOADER.TEST.SAMPLER: SequentialSampler                                  # dg.config.get_cfg_default
+    TRAIN_X
+    cfg.DATALOADER.TRAIN_X.BATCH_SIZE: 16                                           # cfg.merge_from_file(args.config_path_trainer)
+    cfg.DATALOADER.TRAIN_X.N_DOMAIN: 0                                              # dg.config.get_cfg_default
+    cfg.DATALOADER.TRAIN_X.N_INS: 16                                                # dg.config.get_cfg_default
+    cfg.DATALOADER.TRAIN_X.SAMPLER: RandomSampler                                   # dg.config.get_cfg_default
+
+DATASET
+    cfg.DATASET.NAME: PACS                                                          # cfg.merge_from_file(args.config_path_dataset)
+    cfg.DATASET.PATH: datasets/dg                                                   # trainer.reset_cfg(cfg, args)
+    cfg.DATASET.SOURCE_DOMAINS: ['cartoon', 'photo', 'sketch']                      # dg.config.get_cfg_default, trainer.reset_cfg(cfg, args)
+    cfg.DATASET.TARGET_DOMAIN: art_painting                                         # dg.config.get_cfg_default, trainer.reset_cfg(cfg, args)
+
+cfg.GPU: 0                                                                          # trainer.setup_cfg()
+
+INPUT
+    cfg.INPUT.INTERPOLATION: bilinear
+    cfg.INPUT.NO_TRANSFORM: False                                                   # dg.config.get_cfg_default
+    cfg.INPUT.PIXEL_MEAN: [0.0 0.0 0.0]                                             # cfg.merge_from_file(args.config_path_trainer)
+    cfg.INPUT.PIXEL_STD: [1.0 1.0 1.0]                                              # cfg.merge_from_file(args.config_path_trainer)
+    cfg.INPUT.SIZE: (224, 224)                                                      # cfg.merge_from_file(args.config_path_dataset)
+    cfg.INPUT.TRANSFORMS: ('random_flip', 'random_translation', 'normalize')        # cfg.merge_from_file(args.config_path_dataset)
+
+MODEL
+    BACKBONE
+    cfg.MODEL.BACKBONE.NAME: resnet18                                               # cfg.merge_from_file(args.config_path_dataset), trainer.reset_cfg(cfg, args)
+    cfg.MODEL.BACKBONE.PRETRAINED: True                                             # cfg.merge_from_file(args.config_path_dataset)
+    HEAD
+    cfg.MODEL.HEAD.NAME:                                                            # dg.config.get_cfg_default, trainer.reset_cfg(cfg, args)
+
+OPTIM
+    cfg.OPTIM.LR: 0.0005                                                            # cfg.merge_from_file(args.config_path_trainer)
+    cfg.OPTIM.MAX_EPOCH: 25                                                         # cfg.merge_from_file(args.config_path_trainer)
+    cfg.OPTIM.NAME: sgd                                                             # cfg.merge_from_file(args.config_path_trainer)
+    cfg.OPTIM.STEPSIZE: (20,)                                                       # cfg.merge_from_file(args.config_path_trainer)
+
+cfg.OUTPUT_DIR: ./output                                                            # dg.config.get_cfg_default, trainer.reset_cfg(cfg, args)
+cfg.SEED: -1                                                                        # dg.config.get_cfg_default, trainer.reset_cfg(cfg, args)
+
+TRAINER
+    DDAIG
+    cfg.TRAINER.DDAIG.ALPHA: 0.5
+    cfg.TRAINER.DDAIG.CLAMP: False
+    cfg.TRAINER.DDAIG.CLAMP_MAX: 1.0
+    cfg.TRAINER.DDAIG.CLAMP_MIN: -1.0
+    cfg.TRAINER.DDAIG.G_ARCH: fcn_3x64_gctx                                         # cfg.merge_from_file(args.config_path_trainer)
+    cfg.TRAINER.DDAIG.LMDA: 0.3                                                     # cfg.merge_from_file(args.config_path_trainer)
+    cfg.TRAINER.DDAIG.WARMUP: 3                                                     # cfg.merge_from_file(args.config_path_trainer)
+cfg.TRAINER.NAME: DDAIG                                                             # dg.config.get_cfg_default, trainer.reset_cfg(cfg, args)
+
+cfg.USE_CUDA: True                                                                  # dg.config.get_cfg_default
+cfg.VERBOSE: True                                                                   # dg.config.get_cfg_default
+
+
+
++Calling: train.build_trainer()
+    +Calling: DDAIG.__init__()        
+        +Calling: DDAIG.__init__().SimpleTrainer.__init__()                                                                                                          # WAIG <- TrainerX <- SimpleTrainer
+            +Calling: DDAIG.__init__().SimpleTrainer.__init__().TrainerBase.__init__()                                                                               # WAIG <- TrainerX <- SimpleTrainer <- TrainerBase
+            -Closing: DDAIG.__init__().SimpleTrainer.__init__().TrainerBase.__init__()
+
+            +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader()
+                +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__()
+                    # Build Dataset
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_dataset()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_dataset().PACS.__init__()
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_dataset().PACS.__init__().DatasetBase.__init__()   # PACS <- DatasetBase
+                            -Closing: DDAIG.__init__().SimpleTrainer.__Init__().build_data_loader().DataManager.__init__().build_dataset().PACS.__init__().DatasetBase.__init__()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_dataset().PACS.__init__()
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_dataset()
+
+                    # Build transform for train and test
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_transform()._build_transform_train()
+                        tfm_train += resize to 224x224
+                        tfm_train += random translation
+                        tfm_train += random horizontal flip
+                        tfm_train += to torch tensor of range [0, 1]
+                        tfm_train += normalization (mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0])
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_transform()._build_transform_train()
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_transform()._build_transform_test()
+                        tfm_test += resize the smaller edge to 224
+                        tfm_test += 224x224 center crop
+                        tfm_test += to torch tensor of range [0, 1]
+                        tfm_test += normalization (mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0])
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_transform()._build_transform_test()
+
+                    # build data_loader for training, validation and test set
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader() - train_loader_x                             # Build train_loader_x: data_loader for training set
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().build_sampler() - RandomSampler
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().build_sampler() - RandomSampler
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().DatasetWrapper.__init__()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().DatasetWrapper.__init__()
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader() - train_loader_x
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader() - val_loader                                 # Build val_loader: data_loader for validation set
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().build_sampler() - SequentialSampler
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().build_sampler() - SequentialSampler
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().DatasetWrapper.__init__()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().DatasetWrapper.__init__()
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader() - val_loader
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader() - test_loader                                # Build test_loader: data_loader for test set
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().build_sampler() - SequentialSampler
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().build_sampler() - SequentialSampler
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().DatasetWrapper.__init__()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader().DatasetWrapper.__init__()
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__().build_data_loader() - test_loader
+
+                -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader().DataManager.__init__()
+            -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_data_loader()
+
+            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model()
+                +Calling: Building Network F -> Label Classifier
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone()
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18()
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()
+                                    +Calling: ddaig.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__().Backbone.__init__()
+                                    -Closing: ddaig.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__().Backbone.__init__()
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._make_layer().layer1
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._make_layer().layer4
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._init_params()
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._init_params()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().init_pretrained_weights()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().init_pretrained_weights()
+                            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_classifier
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_classifier
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__()
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().count_num_param(self.F) # Params: 11,180,103
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().count_num_param(self.F)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_optimizer(self.F, cfg.OPTIM)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_optimizer(self.F, cfg.OPTIM)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_lr_scheduler(self.optim_F, cfg.OPTIM)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_lr_scheduler(self.optim_F, cfg.OPTIM)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().TrainerBase.register_model(F, self.F, self.optim_F, self.sched_F)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().TrainerBase.register_model(F, self.F, self.optim_F, self.sched_F)
+                -Closing: Building Network F -> Label Classifier
+
+                +Calling: Building Network D -> Domain Classifier
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone()
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18()
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()
+                                    +Calling: ddaig.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__().Backbone.__init__()
+                                    -Closing: ddaig.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__().Backbone.__init__()
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._make_layer().layer1
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._make_layer().layer4
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._init_params()
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()._init_params()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().ResNet.__init__()
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().init_pretrained_weights()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18().init_pretrained_weights()
+                            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone().resnet18()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_backbone()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_classifier
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__().build_classifier
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().SimpleNet.__init__()
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().count_num_param(self.D) # Params: 11,178,051
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().count_num_param(self.D)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_optimizer(self.D, cfg.OPTIM)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_optimizer(self.D, cfg.OPTIM)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_lr_scheduler(self.optim_D, cfg.OPTIM)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_lr_scheduler(self.optim_D, cfg.OPTIM)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().TrainerBase.register_model(D, self.D, self.optim_D, self.sched_D)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().TrainerBase.register_model(D, self.D, self.optim_D, self.sched_D)
+                -Closing: Building Network D -> Domain Classifier
+
+                +Calling: Building Network G -> Data Transformation Network
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.get_norm_layer()
+                            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.get_norm_layer()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__()
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().build_backbone
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__()
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__().build_conv_block()
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__().build_conv_block()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__()
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__()
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__().build_conv_block()
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__().build_conv_block()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__()
+                                +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__()
+                                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__().build_conv_block()
+                                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__().build_conv_block()
+                                -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().ResnetBlock.__init__()
+                            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().build_backbone
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().build_gctx_fusion
+                            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().build_gctx_fusion
+                            +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().build_regress
+                            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__().build_regress
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.FCN.__init__()
+                        +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.init_network_weights()
+                        -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx.init_network_weights()
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_network().fcn_3x64_gctx
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().count_num_param(self.G) # Params: 231,299
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().count_num_param(self.G)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_optimizer(self.G, cfg.OPTIM)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_optimizer(self.G, cfg.OPTIM)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_lr_scheduler(self.optim_G, cfg.OPTIM)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().build_lr_scheduler(self.optim_G, cfg.OPTIM)
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().TrainerBase.register_model(G, self.G, self.optim_G, self.sched_G)
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model().TrainerBase.register_model(G, self.G, self.optim_G, self.sched_G)
+                -Closing: Building Network G -> Data Transformation Network
+            -Closing: DDAIG.__init__().SimpleTrainer.__init__().DDAIG.build_model()
+
+            +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_evaluator()
+                +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_evaluator().Classification.__init__()
+                    +Calling: DDAIG.__init__().SimpleTrainer.__init__().build_evaluator().Classification.__init__().EvaluatorBase.__init__()
+                    -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_evaluator().Classification.__init__().EvaluatorBase.__init__()
+                -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_evaluator().Classification.__init__()
+            -Closing: DDAIG.__init__().SimpleTrainer.__init__().build_evaluator()
+        -Closing: DDAIG.__init__().SimpleTrainer.__init__()
+    -Closing: DDAIG.__init__()
+-Closing: train.build_trainer()
+
++Calling: train.trainer.train()
+    +Calling: train.trainer.train().SimpleTrainer.train()
+        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train()
+            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.before_train()
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.before_train().TrainerBase.init_writer()
+                    Initializing summary writer for tensorboard with log_dir=./output\tensorboard
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.before_train().TrainerBase.init_writer()
+            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.before_train()
+
+            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch()
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().TrainerBase.set_model_mode()
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().TrainerBase.set_model_mode().get_model_names()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().TrainerBase.set_model_mode().get_model_names()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().TrainerBase.set_model_mode()
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().MetricMeter() for losses
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().MetricMeter().__init__()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().MetricMeter().__init__()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().MetricMeter() for losses
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter() for batch_time
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__()
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__().reset()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__().reset()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter() for batch_time
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter() for data_time
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__()
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__().reset()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__().reset()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter().__init__()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().AverageMeter() for data_time
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward()
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().parse_batch_train()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().parse_batch_train()
+
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - generate_perturbation
+                            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - generate_perturbation
+
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - get_loss_from_label_classifier
+                            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - get_loss_from_label_classifier
+
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - get_loss_from_domain_classifier
+                            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - get_loss_from_domain_classifier
+
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.model_backward_and_update(loss_g, G)
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.model_backward_and_update(loss_g, G)
+
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - perturb data with new G
+                            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward().ResnetBlock.forward()
+                            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G.ddaig_fcn.forward()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G - perturb data with new G
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_G
+
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_F
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_F
+
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_D
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward().featuremaps()
+                            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward().ResNet.forward()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().SimpleNet.forward()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward().update_D
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch().DDAIG.forward_backward()
+            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().TrainerX.run_epoch()
+
+            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch()
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model()
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model().save_checkpoint()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model().save_checkpoint()
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model().save_checkpoint()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model().save_checkpoint()
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model().save_checkpoint()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model().save_checkpoint()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch().save_model()
+            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_epoch()
+                
+            +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train()
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test()
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test() - work through test data set
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().Classification.reset()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().Classification.reset()
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().parse_batch_test()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().parse_batch_test()
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().DDAIG.model_inference()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().DDAIG.model_inference()
+                        +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().Classification.process()
+                        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().Classification.process()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test() - work through test data set
+                    +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().Classification.evaluate()
+                    -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test().Classification.evaluate()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().SimpleTrainer.test()
+                +Calling: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().close_writer()
+                -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train().close_writer()
+            -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train().SimpleTrainer.after_train()
+        -Closing: train.trainer.train().SimpleTrainer.train().TrainerBase.train()
+    -Closing: train.trainer.train().SimpleTrainer.train()
+-Closing: train.trainer.train()
+
+
+
+
